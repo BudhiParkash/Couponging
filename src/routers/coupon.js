@@ -4,7 +4,7 @@ const auth = require('../middleware/auth')
 const router = new express.Router()
 const multer = require('multer')
 var moments = require('moment');
-
+var mongoose = require('mongoose');
 // date1 = "2021-09-30"
 // currentDate = moments().format("YYYY-MM-DD")
 // console.log(date1);
@@ -77,6 +77,49 @@ router.post('/v1/Coupon',auth,async (req,res)=>{
 try {
         await data.save()
         res.status(201).send(data)
+
+    } catch (error) {
+        res.status(400).send(error)
+    }
+})
+
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+//Update likes or dislike of Coupon
+router.post('/v1/Coupon/rating',async (req,res)=>{
+
+    var value = req.query.changingValue 
+    var status = req.query.status
+    var id = req.query.id  
+    var objectId = mongoose.Types.ObjectId(id);
+     var coupon = await Coupon.findById(objectId)
+     if(!coupon){
+         return res.status(404).send()
+     }
+
+     if(status == "Active"){
+
+        if(value == 1){
+            coupon.likes = coupon.likes + 1
+            coupon.dislikes = coupon.dislikes - 1
+        }
+        else{
+            coupon.likes = coupon.likes - 1
+            coupon.dislikes = coupon.dislikes + 1
+        }
+
+     }else{
+        if(parseInt(value) == 1){
+            coupon.likes = coupon.likes + 1
+        }
+        else{
+            coupon.dislikes = coupon.dislikes + 1
+        }}
+
+    try {
+        await coupon.save()
+        res.status(200).send(coupon)
 
     } catch (error) {
         res.status(400).send(error)
@@ -250,39 +293,42 @@ router.delete('/v1/Coupon',auth, async(req,res)=>{
     }
 })
 
-// //Update Coupon
-// router.patch('/v1/Coupon', auth,async(req,res) =>{
-//     const updates = Object.keys(req.body)
-//     const allowedUpdates = ['adTitle','prevImgLink','ranking','metaKeywords','metaDiscriptions','startDate',"endDate","fullImageLink","storeName"]
-//     const isValidOperator = updates.every((update) => allowedUpdates.includes(update))
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-//     if(req.query.adId){
-//     if(!isValidOperator){
-//         return res.status(400).send({error : 'Invalid updates'})
-//     }
-//         _id = req.query.adId;
-//         data = await Coupon.findById(_id)
+//Update Coupon
+router.patch('/v1/Coupon',async(req,res) =>{
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['like','dislike','usedBY']
+    const isValidOperator = updates.every((update) => allowedUpdates.includes(update))
 
-//         if(!data){
-//             return res.status(404).send()
-//         }
+    if(req.query.adId){
+    if(!isValidOperator){
+        return res.status(400).send({error : 'Invalid updates'})
+    }
+        _id = req.query.adId;
+        data = await Coupon.findById(_id)
 
-//         try {
-//                 updates.forEach((update)=>{
-//                     data[update] = req.body[update]
+        if(!data){
+            return res.status(404).send()
+        }
 
-//         })
-//          await data.save()
-//          res.send(data)
+        try {
+                updates.forEach((update)=>{
+                    data[update] = req.body[update]
 
-//     } 
-//     catch (e) {
-//         res.status(400).send(e)
-//     }
-//     }else{
-//         res.status(400).send()
-//     }
-// })
+        })
+         await data.save()
+         res.send(data)
+
+    } 
+    catch (e) {
+        res.status(400).send(e)
+    }
+    }else{
+        res.status(400).send()
+    }
+})
 
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -314,6 +360,7 @@ function getCountNumber(item, index, arr) {
     res.status(200).send(data)  
 })
 
-
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 module.exports = router

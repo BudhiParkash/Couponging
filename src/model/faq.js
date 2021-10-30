@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 
 const faq_schema = new mongoose.Schema({
    
-    FAQStoreName:{
+    parentStore:{
         type:String
     },
     question:{

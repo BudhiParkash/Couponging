@@ -82,6 +82,30 @@ router.post('/v1/FAQ/uploadCSV',upload.single('csv') ,auth,async(req,res)=>{
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+//Get FAQ of stores
+router.get('/v1/faq', async(req,res) =>{
+
+    var storeName = req.query.parentStore
+
+    try {
+        
+        var faqs = await FAQ.find({parentStore:storeName})
+
+        if(faqs.length == 0){
+            return res.status(404).send()
+        }
+
+        return res.status(200).send(faqs)
+
+
+
+    } catch (error) {
+        return res.status(400).send(error)
+    }
+
+
+
+})
 
 
 

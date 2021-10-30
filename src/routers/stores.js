@@ -4,11 +4,13 @@ const auth = require('../middleware/auth')
 const multer = require('multer')
 const Coupon = require('../model/coupon')
 const router = new express.Router()
-const io = require('socket.io-client');
-var socket = io("http://localhost:3001", {transports: ['websocket', 'polling', 'flashsocket']});
-socket.on("connect", () => {
-    console.log(socket.id); 
-  });
+// const io = require('socket.io-client');
+// var socket = io("http://localhost:3001", {transports: ['websocket', 'polling', 'flashsocket']});
+
+
+// socket.on("connect", () => {
+//     //console.log(socket.id); 
+//   });
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //Create stores
@@ -64,10 +66,7 @@ router.get('/v1/allStores',async(req,res)=>{
                 }
             }
               res.status(200).send(storeData)  
-    })
-
-
-    
+    })   
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //Get Store by Category    
@@ -79,6 +78,13 @@ router.get('/v1/stores',async(req,res)=>{
             if(storeData.length == 0){
                return res.status(404).send()
             }
+            
+            for(index =0 ;index < storeData.length ; index++){
+                const countNo = await Coupon.find({parentStoreName:storeData[index].storeFriendlyName}).count()
+                storeData[index]._doc.couponCount = countNo
+                
+            }  
+
             res.status(200).send(storeData) 
         }
         
@@ -306,13 +312,13 @@ router.post('/v1/stores/uploadCSV',upload.single('csv') ,auth,async(req,res)=>{
 })
 
 
-router.post('/v1/postrating',async(req,res) =>{
+// router.post('/v1/postrating',async(req,res) =>{
 
-    socket.emit('storeRating', { storeName: "wevibe", click: "up" });
-    socket.emit('counterUpdate', { AvgValue: 4.5});
-    socket.emit('logs', { ip: "hi", device: "uername",country: "hi", store: "uername",date: "2021-09-09", value: 12 });
+//     socket.emit('storeRating', { storeName: "wevibe", click: "up" });
+//     socket.emit('counterUpdate', { AvgValue: 4.5});
+//     socket.emit('logs', { ip: "hi", device: "uername",country: "hi", store: "uername",date: "2021-09-09", value: 12 });
 
-})
+// })
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

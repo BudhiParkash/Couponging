@@ -9,7 +9,6 @@ const router = new express.Router()
 //New Feedback
 router.post('/v1/feedback', async (req,res)=>{
     
-
     const fedData = new FeedBacks(req.body)
     try {      
             await fedData.save() 
@@ -18,9 +17,7 @@ router.post('/v1/feedback', async (req,res)=>{
     } catch (error) {
         return res.status(400).send(error)
     }
-        
-        
-
+    
 })
 
 

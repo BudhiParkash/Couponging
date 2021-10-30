@@ -53,7 +53,10 @@ const coupon_schema = new mongoose.Schema({
     usedBY:{
         type:Number
     },
-    rating:{
+    likes:{
+        type:Number
+    },
+    dislikes:{
         type:Number
     }
 

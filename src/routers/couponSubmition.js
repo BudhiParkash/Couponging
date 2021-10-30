@@ -2,12 +2,12 @@ const express = require('express')
 const Contact = require('../model/contact')
 const CouponSub = require('../model/couponSubmition')
 const router = new express.Router()
-
+const auth = require('../middleware/auth')
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //New Coupon Submition
-router.post('/v1/submit/coupon', async (req,res)=>{
+router.post('/v1/submit/coupon',auth,async (req,res)=>{
     
     const data = new CouponSub(req.body)
     try {      

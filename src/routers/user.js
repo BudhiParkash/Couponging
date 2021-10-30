@@ -4,7 +4,7 @@ const Store = require('../model/stores')
 const router = new express.Router()
 const multer = require('multer')
 const auth = require('../middleware/auth')
-
+const Coupon = require('../model/coupon')
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //New User Create
@@ -19,7 +19,8 @@ router.post('/v1/users', async (req,res)=>{
         if(!findUser){
             await user.save() 
             const token = await user.generateAuthToken()
-            return  res.status(201).send({user,token})
+            findUser = user
+            return  res.status(201).send({findUser,token})
         }
         else{
             const token = await findUser.generateAuthToken()
@@ -72,7 +73,6 @@ router.post('/v1/uploadpic',upload.array('img') ,auth,async(req,res)=>{
     const picPath = req.files.map(file => file.path.replace(/\\/g, '/'))   
  try {
              return   res.status(201).send(picPath)
-     
          } catch (error) {
              res.status(500).send(error)
          }
@@ -92,6 +92,37 @@ router.get('/v1/search',async(req,res)=>{
      else{
         return    res.status(200).send(stores)
      }
+
+
+})
+
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+//Search Api
+router.get('/v1/search/alpha',async(req,res)=>{ 
+    
+
+    
+        const storeData = await Store.find({storeFriendlyName:{$regex: '^' + req.query.s, $options: 'i'}}).sort({ranking:-1}).limit(parseInt(req.query.limit||10))
+        if(storeData.length == 0){
+           return res.status(404).send()
+        }
+    
+          for(index =0 ;index < storeData.length ; index++){
+    
+            const countNo = await Coupon.find({parentStoreName:storeData[index].storeFriendlyName}).count()
+            storeData[index]._doc.couponCount = countNo
+            }  
+    
+    
+        const stores   = await Store.find({storeFriendlyName:{$regex: '^' + req.query.s, $options: 'i'}}, {_id:0,storeTitle:1,storeFriendlyName:1,parentCatName:1}).sort({ranking: -1})    
+         if(stores.length == 0)
+         {   return    res.status(404).send() }
+         else{
+            return    res.status(200).send({stores,storeData})
+         }
 
 
 })

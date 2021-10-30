@@ -122,8 +122,8 @@ const adminBro = new AdminBro({
 })
 
 const SUPERADMIN = {
-    email : 'admin@inventivekey.com',
-    password: 'aDmin@&12kiopjsk3@@mls',
+    email : 'admin',
+    password: 'admin',
     role:"super-admin" 
 }
 

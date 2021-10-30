@@ -2,9 +2,10 @@ const express = require('express')
 require('./db/mongoose')
 const path = require('path')
 const cors = require('cors')
-const http = require('http').Server(express);
-const io = require('socket.io')(http);
-
+// const http = require('http').Server(express);
+// const io = require('socket.io')(http);
+//socket.io
+//socket.io-client
 
 
 const userRouter = require('./routers/user')
@@ -19,12 +20,12 @@ const feedBackRouter = require('./routers/feedback')
 const couponSubRouter = require('./routers/couponSubmition')
 const faqRouter = require('./routers/faq')
 const adminRouter = require('./routers/admin');
-const Logs = require('./model/logs');
-const Stores = require('./model/stores');
-const Counter = require('./model/counter');
+// const Logs = require('./model/logs');
+// const Stores = require('./model/stores');
+// const Counter = require('./model/counter');
 const app = express()
 const port = process.env.PORT || 3000
-const port2 = process.env.PORT || 3001
+//const port2 = process.env.PORT || 3001
 
 
 app.use(cors())
@@ -55,46 +56,46 @@ app.listen(port,()=>{
     
 })
 
-io.on('connection', (socket) => {
-    socket.on('storeRating', value => {
+// io.on('connection', (socket) => {
+//     socket.on('storeRating', value => {
 
-         async  function updateStore() {
-            storedata = await Stores.findOne({storeFriendlyName:value.storeName})
-            storedata.rating = (storedata.rating + 1)
-           await storedata.save()
-           } 
+//          async  function updateStore() {
+//             storedata = await Stores.findOne({storeFriendlyName:value.storeName})
+//             storedata.rating = (storedata.rating + 1)
+//            await storedata.save()
+//            } 
 
-        updateStore()
-
-
-    });
+//         updateStore()
 
 
-    socket.on('counterUpdate', value => {
-
-        async  function updateCounter() {
-           counter = await Counter.findOne({})
-           counter.counterNumber = (counter.counterNumber + value.AvgValue)
-          await counter.save()
-          } 
-
-          updateCounter()
+//     });
 
 
-   });
+//     socket.on('counterUpdate', value => {
+
+//         async  function updateCounter() {
+//            counter = await Counter.findOne({})
+//            counter.counterNumber = (counter.counterNumber + value.AvgValue)
+//           await counter.save()
+//           } 
+
+//           updateCounter()
 
 
-    socket.on('logs', value => {
-        const data = new Logs(value)
-        try {
-           data.save()
-        } catch (error) {
-            console.log("Error in logs sockets");
-        }
-      });
+//    });
 
-});
 
-http.listen(port2, () => {
-    console.log(`Socket.IO server running at http://localhost:${port2}/`);
-  });
+//     socket.on('logs', value => {
+//         const data = new Logs(value)
+//         try {
+//            data.save()
+//         } catch (error) {
+//             console.log("Error in logs sockets");
+//         }
+//       });
+
+//    });
+
+// http.listen(port2, () => {
+//     console.log(`Socket.IO server running at http://localhost:${port2}/`);
+//   });

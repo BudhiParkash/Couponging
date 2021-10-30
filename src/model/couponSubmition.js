@@ -13,7 +13,7 @@ const coupSubmition = new mongoose.Schema({
     expiryDate:{
         type:String
     },
-    generalInfo:{
+    description:{
         type:String
     },
     userEmail:{
